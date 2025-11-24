@@ -1,0 +1,19 @@
+Package: asympcuts
+Type: Package
+Title: Asymptotics of cut posterior distributions
+Version: 0.1.0
+Authors@R: c(
+    person(
+      "Jane", "Doe",
+      email = "jane@doe.com",
+      role = c("aut", "cre")
+    )
+  )
+Description: Reproduces figures of the article available at arxiv:2110.11149    
+Depends: tidyverse, foreach, doRNG, doParallel, tictoc, optimx, gtools, Rcpp, numDeriv
+Imports: Rcpp, RcppEigen
+LinkingTo: Rcpp, RcppEigen
+License: MIT
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.3.3

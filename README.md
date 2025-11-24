@@ -1,0 +1,29 @@
+
+## asympcuts
+
+This repository contains code to reproduce the figures in the paper:
+*Asymptotics of cut distributions and robust modular inference using
+Posterior Bootstrap* by *(anonymous for now)*.
+
+The scripts are organized by folders in the inst/ subfolder. Each folder
+corresponds to a subsection of Section 5 (“Illustrations”) of the paper.
+
+- toy_example
+
+- biased_data
+
+- causal
+
+- epidemio
+
+Each folder contains a file with name ending in `run_all.R` script.
+Installing the package and running these files from the root folder of
+the package will reproduce all the results in the paper:
+
+`Rscript inst/toy_example/toy_example_v2_runall.R`
+
+`Rscript inst/biased_data/biased_data_v2_runall.R`
+
+`Rscript inst/causal/causal_runall.R`
+
+`Rscript inst/epidemio/epidemio_runall.R`
