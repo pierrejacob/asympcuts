@@ -31,8 +31,8 @@ library(Rcpp)
 sourceCpp('inst/causal/weighted_loglik.cpp')
 
 ## generate data stage 1
-n <- 1000
-p_1 <- 7
+n <- 10000
+p_1 <- 5
 X_1 <- matrix(rnorm(n*p_1), nrow = n, ncol = p_1)
 colnames(X_1) <- paste0('X1_', 1:p_1)
 
@@ -85,12 +85,12 @@ tuning_parameters$rinit <- function(nchains){
 ## initialization
 current_chains <- tuning_parameters$rinit(tuning_parameters$nchains)
 ## MCMC run
-rwmrth_res_joint <- rwmrth(target, tuning_parameters)
+rwmrth_res_1 <- rwmrth(target, tuning_parameters)
 ## default choice of burnin
 burnin <- tuning_parameters$niterations/2
 
 mcmc_samples_stage1 <- foreach(ichain = 1:tuning_parameters$nchains, .combine = rbind) %do% {
-  rwmrth_res_joint$chains[[ichain]][(burnin+1):tuning_parameters$niterations,]
+  rwmrth_res_1$chains[[ichain]][(burnin+1):tuning_parameters$niterations,]
 }
 
 
@@ -123,8 +123,8 @@ selected_indices <- round(seq(1, nrow(mcmc_samples_stage1), length.out = N1))
 nr_quantiles <- 5
 res_mcmc_list <- mclapply(selected_indices, function(i){
   beta_1 <- mcmc_samples_stage1[i,]
-  prop_scores_factor <- as.vector(stage_1_model_mat %*% beta_1) %>% gtools::quantcut(q = nr_quantiles)
-  x_part_2 <- model.matrix(~prop_scores_factor) %>% as.data.frame() %>% as.matrix %>% unname()
+  prop_scores_factor <- as.vector(stage_1_model_mat %*% matrix(beta_1, ncol = 1)) %>% gtools::quantcut(q = nr_quantiles)
+  x_part_2 <- model.matrix(~prop_scores_factor) %>% as.matrix %>% unname()
   mat_part_2 <- cbind(treat, x_part_2)
   p_2 <- ncol(mat_part_2) + 1
   ## calibrate proposal covariance from frequentist fit
@@ -140,7 +140,7 @@ res_mcmc_list <- mclapply(selected_indices, function(i){
     sigma <- theta2[p_2]
     if (sigma <= 0) return(-Inf)
     prior_sigma <- dgamma(sigma, 0.01, 0.01, log = TRUE)
-    log_lik <- dnorm(y - as.vector(x%*%matrix(beta, ncol = 1)),
+    log_lik <- dnorm(y - as.vector(x %*% matrix(beta, ncol = 1)),
                      mean = 0, sd = sigma, log = TRUE) %>% sum()
     prior_beta <- sum(dnorm(beta, mean = 0, sd = prior_sd, log = TRUE))
     return(log_lik + prior_beta + prior_sigma)
@@ -157,8 +157,8 @@ res_mcmc_list <- mclapply(selected_indices, function(i){
   cov_proposal[1:(p_2-1), 1:(p_2-1)] <- Sigma_prop
   cov_proposal[p_2, p_2] <- 0.1
   tuning_parameters$cov_proposal <- cov_proposal
-  tuning_parameters$niterations <- 5000
-  tuning_parameters$nchains <- 2
+  tuning_parameters$niterations <- 2000
+  tuning_parameters$nchains <- 1
   tuning_parameters$adaptation <- 1000
   tuning_parameters$rinit <- function(nchains){
     chains <- matrix(0, nrow = nchains, ncol = target$dimension)
@@ -170,24 +170,14 @@ res_mcmc_list <- mclapply(selected_indices, function(i){
   current_chains <- tuning_parameters$rinit(tuning_parameters$nchains)
   ## MCMC run
   rwmrth_res_2 <- rwmrth(target, tuning_parameters)
-  ## default choice of burnin
-  burnin <- tuning_parameters$niterations/2
   ## trace plot
-  matplot(rwmrth_res_2$chains[[1]], type = 'l')
+  ## default choice of burnin
+  # burnin <- tuning_parameters$niterations/2
+  # matplot(rwmrth_res_2$chains[[1]], type = 'l')
   mcmc_samples_stage2 <- foreach(ichain = 1:tuning_parameters$nchains, .combine = rbind) %do% {
     rwmrth_res_2$chains[[ichain]][(tuning_parameters$niterations-9):tuning_parameters$niterations,]
   }
-
-  # stage2_mcmc <- linear_regression_mcmc(N_final = 10,
-  #                                       x = mat_part_2 ,
-  #                                       y = outcome,
-  #                                       prior_sd = 1000,
-  #                                       sigma_prop = 0.01,
-  #                                       thin = 2,
-  #                                       burn_in = 5000,
-  #                                       scale = 1)
   return(mcmc_samples_stage2)
-
 }, mc.cores = 10)
 
 df_mcmc <- do.call('rbind', res_mcmc_list ) %>% as.data.frame()
@@ -247,9 +237,8 @@ theta2hat
 
 
 logposterior2 <- function(theta1, theta2){
-  prop_scores_factor <- as.vector(stage_1_model_mat%*%theta1) %>% gtools::quantcut(q = nr_quantiles)
+  prop_scores_factor <- as.vector(stage_1_model_mat %*% matrix(theta1, ncol = 1)) %>% gtools::quantcut(q = nr_quantiles)
   x_part_2 <- model.matrix(~prop_scores_factor) %>%
-    as.data.frame() %>%
     as.matrix %>%
     unname()
   mat_part_2 <- cbind(treat, x_part_2)
@@ -257,25 +246,66 @@ logposterior2 <- function(theta1, theta2){
   y = outcome
   x = mat_part_2
   prior_sd = 1000
-  log_target <- function(theta2){
-    beta <- theta2[1:(p_2-1)]
-    sigma <- theta2[p_2]
-    if (sigma <= 0) return(-Inf)
-    prior_sigma <- dgamma(sigma, 0.01, 0.01, log = TRUE)
-    log_lik <- dnorm(y - as.vector(x%*%matrix(beta, ncol = 1)),
-                     mean = 0, sd = sigma, log = TRUE) %>% sum()
-    prior_beta <- sum(dnorm(beta, mean = 0, sd = prior_sd, log = TRUE))
-    return(log_lik + prior_beta + prior_sigma)
-  }
-  return(log_target(theta2))
+  beta <- theta2[1:(p_2-1)]
+  sigma <- theta2[p_2]
+  if (sigma <= 0) return(-Inf)
+  prior_sigma <- dgamma(sigma, 0.01, 0.01, log = TRUE)
+  log_lik <- dnorm(y - as.vector(x%*%matrix(beta, ncol = 1)),
+                   mean = 0, sd = sigma, log = TRUE) %>% sum()
+  prior_beta <- sum(dnorm(beta, mean = 0, sd = prior_sd, log = TRUE))
+  return(log_lik + prior_beta + prior_sigma)
 }
 
-laplace_cut_results <- laplace_cut(logposterior1, logposterior2, theta1hat, theta2hat)
+d1 <- p_1
+d2 <- p_2
+xseq <- seq(from = -20, to = -10, by = 0.1)
+yseq <- sapply(xseq,
+       function(x) logposterior2(theta1hat+ exp(x) * rep(1, d1), theta2hat))
+plot(xseq, yseq, type = "l")
 
-laplace_cut_results$asympvar[(p_1+1):(p_1+2),(p_1+1):(p_1+2)]
+## Computes hessians at the two stage MAP estimate
+hessian1 <- hessian(func = logposterior1, theta1hat)
+## Compute Hessian of L_2 at 2SMAP
+hessian2 <- hessian(func = function(theta) logposterior2(theta[1:d1], theta[(d1+1):(d1+d2)]), c(theta1hat, theta2hat),
+                    method.args=list(eps=1e-1, d=0.0001, zero.tol=sqrt(.Machine$double.eps/7e-7), r=8, v=2, show.details=FALSE))
+
+numDeriv::grad(func = function(th) logposterior2(th[1:d1], th[(d1+1):(d1+d2)]), x = c(theta1hat,theta2hat),
+               method.args=list(eps=1e-2, d=0.0001, zero.tol=sqrt(.Machine$double.eps/7e-7), r=10, v=2, show.details=FALSE))
+
+
+## Construct asymptotic precision matrix of the Laplace approximation
+asympprec <- matrix(0, nrow = d1 + d2, ncol = d1 + d2)
+topleft <- hessian1 + hessian2[1:d1,(d1+1):(d1+d2),drop=F] %*% solve(hessian2[(d1+1):(d1+d2),(d1+1):(d1+d2),drop=F], hessian2[(d1+1):(d1+d2),1:d1,drop=F])
+asympprec[1:d1, 1:d1] <- topleft
+asympprec[1:d1,(d1+1):(d1+d2)] <- hessian2[1:d1,(d1+1):(d1+d2)]
+asympprec[(d1+1):(d1+d2),1:d1] <- hessian2[(d1+1):(d1+d2),1:d1]
+asympprec[(d1+1):(d1+d2),(d1+1):(d1+d2)] <- hessian2[(d1+1):(d1+d2),(d1+1):(d1+d2)]
+## Laplace approximation of cut posterior is given by N(thetahat, asympvar)
+laplace_cut_asympvar <- solve(-asympprec)
+laplace_cut_asympvar[(p_1+1):(p_1+2),(p_1+1):(p_1+2)]
 cov(df_mcmc[,1:2])
 
-save(laplace_cut_results, theta1hat, theta2hat, df_mcmc,
+## alternate
+asympvar_2 <- matrix(0, nrow = d1 + d2, ncol = d1 + d2)
+asympvar_2[1:d1, 1:d1] <- solve(hessian1)
+# laplace_cut_asympvar[1:d1, 1:d1]
+asympvar_2[1:d1, (d1+1):(d1+d2)] <-  - solve(hessian1) %*% hessian2[1:d1,(d1+1):(d1+d2),drop=F] %*% solve(hessian2[(d1+1):(d1+d2),(d1+1):(d1+d2),drop=F])
+# asympvar_2[1:d1, (d1+1):(d1+d2)]
+# laplace_cut_asympvar[1:d1, (d1+1):(d1+d2)]
+asympvar_2[(d1+1):(d1+d2),1:d1] <-  t(asympvar_2[1:d1, (d1+1):(d1+d2)])
+# asympvar_2[(d1+1):(d1+d2),1:d1]
+# laplace_cut_asympvar[(d1+1):(d1+d2),1:d1]
+asympprec[(d1+1):(d1+d2),(d1+1):(d1+d2)] <- solve(hessian2[(d1+1):(d1+d2),(d1+1):(d1+d2),drop=F]) - asympvar_2[(d1+1):(d1+d2),1:d1] %*% hessian2[1:d1,(d1+1):(d1+d2),drop=F] %*% solve(hessian2[(d1+1):(d1+d2),(d1+1):(d1+d2),drop=F])
+laplace_cut_asympvar[(d1+1):(d1+d2),(d1+1):(d1+d2)]
+
+laplace_cut_results <- laplace_cut(logposterior1, logposterior2, theta1hat, theta2hat)
+laplace_cut_results$asympvar[(p_1+1):(p_1+2),(p_1+1):(p_1+2)]
+cov(df_mcmc[,1:7])
+
+as.numeric(laplace_cut_results$thetahat)
+as.numeric(c(colMeans(mcmc_samples_stage1), colMeans(df_mcmc[,1:p_2])))
+
+save(laplace_cut_results, theta1hat, theta2hat, mcmc_samples_stage1, df_mcmc,
      file = 'inst/causal/causal_synthetic_largen.RData')
 
 load(file = 'inst/causal/causal_synthetic_largen.RData')
@@ -300,15 +330,24 @@ g3 <- ggplot(df_stage1, aes(x = theta.3, fill = method)) +
 grid.arrange(g1, g2, g3,  ncol = 3)
 
 ## second stage accuracy
+## Laplace approximation at second stage, for fixed theta1hat
+Laplace2giventheta1hat <- solve(-hessian(func = function(th2) logposterior2(theta1hat, th2),
+                                         x = theta2hat))
+Laplace2giventheta1hat[1:2,1:2]
+cov(df_mcmc[,1:2])
+
+
 df_stage2 <- data.frame(method = "mcmc", theta = df_mcmc[,1:6] %>% as.matrix())
 colnames(df_stage2) <- c("method", paste0("theta.", 1:6))
 df_stage2 <- rbind(df_stage2, data.frame(method = "laplace", theta = laplace_cut_samples[,(p_1 + 1):(p_1 + 6)]))
+laplace2_samples <- fast_rmvnorm(1e5, theta2hat, Laplace2giventheta1hat)
+df_stage2 <- rbind(df_stage2, data.frame(method = "laplace2", theta = laplace2_samples[,1:6]))
 g1 <- ggplot(df_stage2, aes(x = theta.1, fill = method)) +
-  geom_density(alpha = 0.7)
+  geom_density(alpha = 0.3) + xlab("theta 2 1")
 g2 <- ggplot(df_stage2, aes(x = theta.2, fill = method)) +
-  geom_density(alpha = 0.7)
+  geom_density(alpha = 0.3) + xlab("theta 2 2")
 g3 <- ggplot(df_stage2, aes(x = theta.3, fill = method)) +
-  geom_density(alpha = 0.7)
+  geom_density(alpha = 0.3) + xlab("theta 2 3")
 grid.arrange(g1, g2, g3,  ncol = 3)
 # g4 <- ggplot(df_stage2, aes(x = theta.4, fill = method)) +
 #   geom_density(alpha = 0.7)
@@ -318,11 +357,6 @@ grid.arrange(g1, g2, g3,  ncol = 3)
 #   geom_density(alpha = 0.7)
 # grid.arrange(g1, g2, g3, g4, g5, g6,  ncol = 3)
 
-## Laplace approximation at second stage, for fixed theta1hat
-Laplace2giventheta1hat <- solve(-hessian(func = function(th2) logposterior2(theta1hat, th2),
-        x = theta2hat))
-Laplace2giventheta1hat[1:2,1:2]
-cov(df_mcmc[,1:2])
 
 df_compar <- data.frame(V1 = laplace_cut_samples[,p_1 + 1], method = 'cut Laplace')
 df_compar <- rbind(df_compar, df_mcmc %>% dplyr::select(V1, method))

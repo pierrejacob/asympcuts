@@ -74,7 +74,7 @@ ghist_upsidedown_post
 ggsave(filename = "inst/causal/causal_inference_income_histogram_post.pdf", ghist_upsidedown_post, width = 8, height = 5)
 
 
-load('inst/causal/causal_twostep_laplace_results.RData')
+load('inst/causal/causal_twostage_results.RData')
 
 ## Standardize the data
 standardize <- function(x) {
@@ -91,7 +91,7 @@ stage_1_model_mat <- model.matrix(treat ~ age + age_sq + educ + race + married +
                                   data = lalonde)
 
 
-propscores <- stage_1_model_mat %*% laplace_cut_results$thetahat[1:10]
+propscores <- stage_1_model_mat %*% theta1hat
 
 ## histogram of propscores for treated and control groups
 df_propscores <- data.frame(propscore = as.vector(propscores),
@@ -108,10 +108,10 @@ ggsave(filename = "inst/causal/causal_inference_propscores.pdf", g_propscorebytr
 
 
 ## Causal inference results plot comparing the treatment effect under cut Bayesian and PB
-causal_df <- readRDS(df, file ='inst/causal/causal_twostage_results.rds')
-head(causal_df)
+# causal_df <- readRDS(df, file ='inst/causal/causal_twostage_results.rds')
+# head(causal_df)
 ## rename methods
-causal_df$method <- dplyr::recode(causal_df$method,
+df_twostage$method <- dplyr::recode(df_twostage$method,
                                   'PBMI' = 'PBMI',
                                   'PB refresh' = 'PBMI-refresh',
                                   'cut Bayesian' = 'Cut')
@@ -120,20 +120,20 @@ my_palette <- c("black", rgb(1,0.7,0.7), rgb(0.8,0.5,0.5), rgb(0.7,0.7, 1), rgb(
 #
 #
 # load('inst/causal/causal_twostep_laplace_results.RData')
-laplace_cut_samples <- fast_rmvnorm(1e5, laplace_cut_results$thetahat, laplace_cut_results$asympvar)
-laplace_cut_samples <- laplace_cut_samples[,11:16]
-causal_df_laplace <- data.frame(laplace_cut_samples, method = 'Cut-Laplace')
-colnames(causal_df_laplace)[1:6] <- colnames(causal_df)[1:6]
-causal_df <- rbind(causal_df, causal_df_laplace)
+# laplace_cut_samples <- fast_rmvnorm(1e5, laplace_cut_results$thetahat, laplace_cut_results$asympvar)
+# laplace_cut_samples <- laplace_cut_samples[,11:16]
+# causal_df_laplace <- data.frame(laplace_cut_samples, method = 'Cut-Laplace')
+# colnames(causal_df_laplace)[1:6] <- colnames(causal_df)[1:6]
+# causal_df <- rbind(causal_df, causal_df_laplace)
 
-causal_df %>% group_by(method) %>% summarise(mean_treat = mean(V1), sd_treat = sd(V1))
+df_twostage %>% group_by(method) %>% summarise(mean_treat = mean(V1), sd_treat = sd(V1))
 
-causal_df$method %>% unique()
+df_twostage$method %>% unique()
 
-causal_plot <- ggplot(causal_df, aes(x = V1, color = method, linetype = method)) + geom_density(size=1) +
+causal_plot <- ggplot(df_twostage, aes(x = V1, color = method, linetype = method)) + geom_density(size=1) +
   xlab('treatment') +
-  scale_color_manual(name = "Distribution", values = c(my_palette[2], my_palette[3],  my_palette[6], my_palette[7]))  +
-  scale_linetype_manual(name = "Distribution", values = c(1, 2, 4, 4)) +
+  scale_color_manual(name = "Distribution", values = c(my_palette[2],  my_palette[6], my_palette[7]))  +
+  scale_linetype_manual(name = "Distribution", values = c(1, 4, 4)) +
   scale_x_continuous(breaks = seq(-.3, 0.9, 0.3))
 causal_plot
 #
