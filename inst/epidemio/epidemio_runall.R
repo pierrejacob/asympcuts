@@ -55,7 +55,7 @@ logposterior2 <- function(theta1, theta2) epidemiology_loglikC(theta1, theta2, n
 source("inst/epidemio/epidemio_joint.R")
 # Run two-stage MCMC to estimate the cut distribution
 # Generate epidemiology_cut_mcmc_samples.RData
-source("inst/epidemio/epidemio_cut.R")
+source("inst/epidemio/epidemio_twostage.R")
 # Run PBMI
 source("inst/epidemio/epidemio_pbmi.R")
 # Run Cut-Laplace approximation
