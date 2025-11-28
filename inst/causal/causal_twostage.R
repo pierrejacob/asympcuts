@@ -226,7 +226,7 @@ df_twostage <- rbind(df_mcmc, df_pb, df_pb_refresh)
 save(theta1hat, theta2hat, df_twostage, file ='inst/causal/causal_twostage_results.RData')
 #
 # # Visualization to compare PBMI and cut Bayesian
-ggplot(df, aes(x=V1, col = method)) + geom_density()
+# ggplot(df, aes(x=V1, col = method)) + geom_density()
 # ggplot(df, aes(x=V2, col = method)) + geom_density()
 # ggplot(df, aes(x=V3, col = method)) + geom_density()
 # ggplot(df, aes(x=V4, col = method)) + geom_density()

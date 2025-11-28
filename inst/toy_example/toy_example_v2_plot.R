@@ -91,6 +91,31 @@ g_cut_vs_pbmi <- ggplot(df_samples, aes(x = theta1, y = theta2, color = factor(d
 g_cut_vs_pbmi
 ggsave(paste0('inst/toy_example/toy_example_v2_cut_vs_pbmi_scenario', SCENARIO, '.pdf'), g_cut_vs_pbmi, width = 8, height = 5)
 
+### all in one plot
+df_samples <- data.frame(theta1 = mcmc_samples[,1], theta2 = mcmc_samples[,2], dist = "Standard", laplace = FALSE)
+df_samples <- rbind(df_samples,
+                    data.frame(theta1 = samples_laplace[,1], theta2 = samples_laplace[,2], dist = "Standard Laplace", laplace = TRUE))
+df_samples <- rbind(df_samples,
+                    data.frame(theta1 = cut_samples[,1], theta2 = cut_samples[,2], dist = "Cut", laplace = FALSE))
+df_samples <- rbind(df_samples, data.frame(theta1 = cut_laplace_samples[,1], theta2 = cut_laplace_samples[,2],
+                                           dist = "Cut-Laplace", laplace = TRUE))
+
+df_samples <- rbind(df_samples, data.frame(theta1 = pbmi_samples[,1], theta2 = pbmi_samples[,2],
+                                           dist = "PBMI", laplace = FALSE))
+df_samples$dist <- factor(df_samples$dist,
+                                  levels = c("Cut", "Cut-Laplace", "Standard", "Standard Laplace", "PBMI"))
+g_std_vs_cut <- ggplot(df_samples, aes(x = theta1, y = theta2, color = factor(dist), linetype = factor(dist))) +
+  stat_ellipse(level = 0.95, type = 'norm', linewidth = 2) +
+  scale_color_manual(name = "", values = c("Cut"=my_palette[2], "Cut-Laplace"=my_palette[3], "Standard"=my_palette[4], "Standard Laplace"=my_palette[5], "PBMI" = my_palette[6])) +
+  scale_linetype_manual(name = "", values = c(1,3,1,3, 1)) +
+  geom_point(data = df_map, aes(x = theta1, y = theta2, color = factor(dist)),
+             inherit.aes = FALSE,
+             size = 4, shape = 4, stroke = 2) +
+  xlim(-0.16,0.41) + ylim(1.27, 1.61) +
+  xlab(expression(theta[1])) + ylab(expression(theta[2]))   # ggtitle(paste0("Scenario ", SCENARIO), subtitle = 'Standard Posterior (and Laplace approx.) in blue vs Cut (and Laplace approx.) in red')
+g_std_vs_cut
+ggsave(paste0('inst/toy_example/toy_example_v2_std_vs_cut_scenario', SCENARIO, '.pdf'), g_std_vs_cut, width = 8, height = 5)
+
 
 load(file = paste0("inst/toy_example/toy_example_v2_twostage_coverage_scenario", SCENARIO, ".RData"))
 

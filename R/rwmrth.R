@@ -68,7 +68,7 @@ rwmrth <- function(target, tuning_parameters){
     }
     dtarget_history[iteration,] <- current_dtarget
   }
-  cat("average acceptance:", naccepts / (niterations*nchains) * 100, "%\n")
+  # cat("average acceptance:", naccepts / (niterations*nchains) * 100, "%\n")
   return(list(chains = chains, current_dtarget = current_dtarget, dtarget_history = dtarget_history,
               naccepts = naccepts, cov_proposal = cov_proposal))
 }
