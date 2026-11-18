@@ -74,7 +74,7 @@ ghist_upsidedown_post
 ggsave(filename = "inst/causal/causal_inference_income_histogram_post.pdf", ghist_upsidedown_post, width = 8, height = 5)
 
 
-load('inst/causal/causal_twostage_results.RData')
+load('inst/causal/causal_twostage_v3_pbmi_results.RData')
 
 ## Standardize the data
 standardize <- function(x) {
@@ -107,14 +107,13 @@ g_propscorebytreat
 ggsave(filename = "inst/causal/causal_inference_propscores.pdf", g_propscorebytreat, width = 8, height = 5)
 
 
+df_twostage$method %>% unique()
 ## Causal inference results plot comparing the treatment effect under cut Bayesian and PB
-# causal_df <- readRDS(df, file ='inst/causal/causal_twostage_results.rds')
-# head(causal_df)
 ## rename methods
 df_twostage$method <- dplyr::recode(df_twostage$method,
-                                  'PBMI' = 'PBMI',
-                                  'PB refresh' = 'PBMI-refresh',
-                                  'cut Bayesian' = 'Cut')
+                                  'PBMI (same weights)' = 'PBMI',
+                                  'PBMI (refreshed weights)' = 'PBMI-refresh',
+                                  'cut Bayesian (PG Gibbs + Gibbs, D&W strata)' = 'Cut')
 #
 my_palette <- c("black", rgb(1,0.7,0.7), rgb(0.8,0.5,0.5), rgb(0.7,0.7, 1), rgb(0.5, 0.5, 0.8), rgb(0, 0.3, 0.6), rgb(0, 0.6, 0.3))
 #
@@ -128,16 +127,16 @@ my_palette <- c("black", rgb(1,0.7,0.7), rgb(0.8,0.5,0.5), rgb(0.7,0.7, 1), rgb(
 
 df_twostage %>% group_by(method) %>% summarise(mean_treat = mean(V1), sd_treat = sd(V1))
 
-df_twostage$method %>% unique()
+df_twostage %>% head()
 
-causal_plot <- ggplot(df_twostage, aes(x = V1, color = method, linetype = method)) + geom_density(size=1) +
-  xlab('treatment') +
-  scale_color_manual(name = "Distribution", values = c(my_palette[2],  my_palette[6], my_palette[7]))  +
-  scale_linetype_manual(name = "Distribution", values = c(1, 4, 4)) +
-  scale_x_continuous(breaks = seq(-.3, 0.9, 0.3))
+causal_plot <- ggplot(df_twostage, aes(x = V1 * sd_re78, color = method, linetype = method)) + geom_density(linewidth=1) +
+  xlab('ATT') +
+  scale_color_manual(name = "", values = c(my_palette[2],  my_palette[6], my_palette[7]))  +
+  scale_linetype_manual(name = "", values = c(1, 3, 4)) +
+  scale_x_continuous(breaks = c(-2000, 0, 2000, 4000))
 causal_plot
 #
 # ggsave('inst/causal/causal_result.pdf', causal_plot, width = 8, height = 5)
-ggsave('inst/causal/causal_treatcoef.pdf', causal_plot, width = 8, height = 5)
+ggsave('inst/causal/causal_att.pdf', causal_plot, width = 8, height = 5)
 
 

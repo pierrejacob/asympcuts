@@ -39,7 +39,7 @@ double weighted_logistic_log_likC(NumericVector beta,
 //' @note Function for evaluating weighted log likelihood for a linear regression model
 //' @param beta Parameter beta (including intercept)
 //' @param y Outcome variable
-//' @param x Matrix with covariates
+//' @param x Matrix with covariates (including a column of one for the intercept)
 //' @param weights Vector of weights
 //' @param ncol Number of columns of x
 //' @param nrow Number of rows of x

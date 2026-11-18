@@ -1,6 +1,5 @@
 #'@name asympcuts-package
-#'@aliases asympcuts
-#'@docType package
+#'@aliases asympcuts asympcuts-package
 #'@title asympcuts
 #'@author anonymous for now
 #'@description ...
@@ -8,4 +7,4 @@
 #'@keywords package
 #'@useDynLib asympcuts
 #'@importFrom Rcpp sourceCpp
-NULL
+"_PACKAGE"

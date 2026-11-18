@@ -60,8 +60,8 @@ df_samples$dist %>% unique
 ## plot histogram of first marginal
 g_hist_theta2_1 <- ggplot(df_samples, aes(x = theta2.1, color = factor(dist), linetype = factor(dist))) +
   geom_density(aes(y=after_stat(density)), position="identity") +
-  scale_linetype_manual(name = "Distribution", values = c(1, 2, 1, 1)) +
-  scale_color_manual(name = "Distribution", values = c("Cut" = my_palette[2], "Cut-Laplace" = my_palette[3], "Standard" = my_palette[4], "PBMI" = my_palette[6])) +
+  scale_linetype_manual(name = "", values = c(1, 2, 1, 1)) +
+  scale_color_manual(name = "", values = c("Cut" = my_palette[2], "Cut-Laplace" = my_palette[3], "Standard" = my_palette[4], "PBMI" = my_palette[6])) +
   xlab(expression(theta[2.1])) +
   ylab("Density")
 g_hist_theta2_1
@@ -69,8 +69,8 @@ ggsave('inst/epidemio/epidemio_hist_theta2_1.pdf', g_hist_theta2_1, width = 8, h
 
 g_hist_theta2_2 <- ggplot(df_samples, aes(x = theta2.2, color = factor(dist), linetype = factor(dist))) +
   geom_density(aes(y=after_stat(density)), position="identity") +
-  scale_linetype_manual(name = "Distribution", values = c(1, 2, 1, 1)) +
-  scale_color_manual(name = "Distribution", values = c("Cut" = my_palette[2], "Cut-Laplace" = my_palette[3], "Standard" = my_palette[4], "PBMI" = my_palette[6])) +
+  scale_linetype_manual(name = "", values = c(1, 2, 1, 1)) +
+  scale_color_manual(name = "", values = c("Cut" = my_palette[2], "Cut-Laplace" = my_palette[3], "Standard" = my_palette[4], "PBMI" = my_palette[6])) +
   xlab(expression(theta[2.2])) +
   ylab("Density")
 g_hist_theta2_2

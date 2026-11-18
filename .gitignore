@@ -3,6 +3,9 @@
 .RData
 .Ruserdata
 .DS_Store
+*.tar.gz
+.claude/
+..Rcheck/
 Rplots.pdf
 src/*.o
 src/*.so
@@ -19,6 +22,8 @@ inst/epidemio/*.RData
 inst/epidemio/*.pdf
 inst/epidemio/*.rds
 inst/causal/v1/
+inst/causal/v2/
+inst/causal/backup*
 inst/causal/*.pdf
 inst/causal/*.rds
 inst/causal/*.RData
