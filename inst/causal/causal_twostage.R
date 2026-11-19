@@ -292,6 +292,17 @@ gibbs_stage2 <- function(y, x, niter = 50, nkeep = 2,
 # gibbs_check <- gibbs_stage2(y_hat, covariates_fromtheta1hat, niter = 5000, nkeep = 4000)
 # rbind(gibbs = colMeans(gibbs_check), ols = c(coef(ols_hat), NA))
 
+## MCMC for stage 2 using fixed theta1hat
+# covariates_fromtheta1hat <- create_covariate2(theta1hat)
+# keep_hat <- attr(covariates_fromtheta1hat, "keep")
+# y_hat <- lalonde$re78[keep_hat]
+# gibbs_stage2_theta1hat <- gibbs_stage2(y_hat, covariates_fromtheta1hat,
+#              niter = 1e4, nkeep = 5e3, prior_sd = prior2_coef_sd,
+#              a0 = prior2_invgamma_param1, b0 = prior2_invgamma_param2)
+# head(gibbs_stage2_theta1hat)
+# att_theta1hat <- apply(gibbs_stage2_theta1hat, 1, function(theta2) att_from_beta(theta2, covariates_fromtheta1hat))
+# head(att_theta1hat)
+
 ## number of iterations per theta1 and number of draws kept (the last ones)
 niter_gibbs <- 50
 nkeep_gibbs <- 2
@@ -467,7 +478,9 @@ print(rbind(pg_mean = colMeans(mcmc_samples_stage1), pb_mean = colMeans(pb_res$t
 df_pb <- data.frame(V1 = pb_res$att, method = "PBMI (same weights)")
 df_pb_refresh <- data.frame(V1 = pb_res_refresh$att, method = "PBMI (refreshed weights)")
 
-df_twostage <- rbind(df_mcmc, df_pb, df_pb_refresh) %>% dplyr::filter(!is.na(V1))
+df_stage2giventheta1hat <- data.frame(V1 = att_theta1hat, method = "Stage2giventheta1hat")
+
+df_twostage <- rbind(df_mcmc, df_pb, df_pb_refresh, df_stage2giventheta1hat) %>% dplyr::filter(!is.na(V1))
 
 ## ATT in dollars, by method
 df_twostage %>% group_by(method) %>%
@@ -475,6 +488,7 @@ df_twostage %>% group_by(method) %>%
             q2.5 = quantile(V1 * sd_re78, 0.025), q97.5 = quantile(V1 * sd_re78, 0.975),
             n = n()) %>%
   print()
+
 
 ## Visualization to compare PBMI and cut Bayesian
 g_att <- ggplot(df_twostage, aes(x = V1 * sd_re78, colour = method)) +

@@ -98,7 +98,7 @@ df_propscores <- data.frame(propscore = as.vector(propscores),
                             treat = lalonde$treat)
 g_propscorebytreat <- ggplot(df_propscores, aes(x = propscore, fill = factor(treat))) +
   geom_histogram(bins = 100, position = 'identity', alpha = 0.5) +
-  labs(x = 'propensity score',
+  labs(x = 'logit of propensity score',
        y = 'count',
        fill = 'treatment') +
   scale_fill_manual(name = "", labels = c('Control', 'Treated'),
@@ -113,7 +113,9 @@ df_twostage$method %>% unique()
 df_twostage$method <- dplyr::recode(df_twostage$method,
                                   'PBMI (same weights)' = 'PBMI',
                                   'PBMI (refreshed weights)' = 'PBMI-refresh',
-                                  'cut Bayesian (PG Gibbs + Gibbs, D&W strata)' = 'Cut')
+                                  'cut Bayesian (PG Gibbs + Gibbs, D&W strata)' = 'Cut',
+                                  'Stage2giventheta1hat' = 'Bayes given theta1hat')
+df_twostage <- df_twostage %>% filter(method != 'Bayes given theta1hat')
 #
 my_palette <- c("black", rgb(1,0.7,0.7), rgb(0.8,0.5,0.5), rgb(0.7,0.7, 1), rgb(0.5, 0.5, 0.8), rgb(0, 0.3, 0.6), rgb(0, 0.6, 0.3))
 #
@@ -127,12 +129,12 @@ my_palette <- c("black", rgb(1,0.7,0.7), rgb(0.8,0.5,0.5), rgb(0.7,0.7, 1), rgb(
 
 df_twostage %>% group_by(method) %>% summarise(mean_treat = mean(V1), sd_treat = sd(V1))
 
-df_twostage %>% head()
+df_twostage %>% tail()
 
 causal_plot <- ggplot(df_twostage, aes(x = V1 * sd_re78, color = method, linetype = method)) + geom_density(linewidth=1) +
   xlab('ATT') +
-  scale_color_manual(name = "", values = c(my_palette[2],  my_palette[6], my_palette[7]))  +
-  scale_linetype_manual(name = "", values = c(1, 3, 4)) +
+  scale_color_manual(name = "", values = c(my_palette[2],  my_palette[6], my_palette[7],  my_palette[6]))  +
+  scale_linetype_manual(name = "", values = c(1, 3, 4, 7)) +
   scale_x_continuous(breaks = c(-2000, 0, 2000, 4000))
 causal_plot
 #
