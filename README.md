@@ -10,8 +10,6 @@ corresponds to a subsection of Section 5 (“Illustrations”) of the paper.
 
 - toy_example
 
-- biased_data
-
 - causal
 
 - epidemio
@@ -21,8 +19,6 @@ Installing the package and running these scripts from the root folder of
 the package will reproduce the results in the paper:
 
 `Rscript inst/toy_example/toy_example_v2_runall.R`
-
-`Rscript inst/biased_data/biased_data_v2_runall.R`
 
 `Rscript inst/causal/causal_runall.R`
 
