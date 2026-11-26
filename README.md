@@ -16,9 +16,9 @@ corresponds to a subsection of Section 5 (“Illustrations”) of the paper.
 
 - epidemio
 
-Each folder contains a file with name ending in `run_all.R` script.
-Installing the package and running these files from the root folder of
-the package will reproduce all the results in the paper:
+Each folder contains a script with filename ending in “run_all.R”
+Installing the package and running these scripts from the root folder of
+the package will reproduce the results in the paper:
 
 `Rscript inst/toy_example/toy_example_v2_runall.R`
 
