@@ -57,7 +57,7 @@ ghist_upsidedown_pre <- ghist_upsidedown_pre + annotate("segment", x = m0, xend 
   annotate("segment", x = m1, xend = m1, y = 0, yend = -Inf, colour = '#CC79A7')
 ghist_upsidedown_pre <- ghist_upsidedown_pre + xlab('income (in US dollars)')
 ghist_upsidedown_pre
-ggsave(filename = "inst/causal/causal_inference_income_histogram_pre.pdf", ghist_upsidedown_pre, width = 8, height = 5)
+ggsave(filename = "inst/causal/causal_lalonde/causal_inference_income_histogram_pre.pdf", ghist_upsidedown_pre, width = 8, height = 5)
 
 
 ghist_upsidedown_post <- ggplot() + geom_histogram(data=df_histogram %>% filter(year == "post-intervention (1978)", treatment == 0), aes(x = income, y = ..density.., fill = treatment), alpha=0.4, bins = 50) +
@@ -71,10 +71,10 @@ ghist_upsidedown_post <- ghist_upsidedown_post + annotate("segment", x = m0_post
   annotate("segment", x = m1_post, xend = m1_post, y = 0, yend = -Inf, colour = '#CC79A7')
 ghist_upsidedown_post <- ghist_upsidedown_post + xlab('income (in US dollars)')
 ghist_upsidedown_post
-ggsave(filename = "inst/causal/causal_inference_income_histogram_post.pdf", ghist_upsidedown_post, width = 8, height = 5)
+ggsave(filename = "inst/causal/causal_lalonde/causal_inference_income_histogram_post.pdf", ghist_upsidedown_post, width = 8, height = 5)
 
 
-load('inst/causal/causal_twostage_v3_pbmi_results.RData')
+load('inst/causal/causal_lalonde/causal_twostage_v3_pbmi_results.RData')
 
 ## Standardize the data
 standardize <- function(x) {
@@ -104,7 +104,7 @@ g_propscorebytreat <- ggplot(df_propscores, aes(x = propscore, fill = factor(tre
   scale_fill_manual(name = "", labels = c('Control', 'Treated'),
                     values = c('#56B4E9', '#CC79A7'))
 g_propscorebytreat
-ggsave(filename = "inst/causal/causal_inference_propscores.pdf", g_propscorebytreat, width = 8, height = 5)
+ggsave(filename = "inst/causal/causal_lalonde/causal_inference_propscores.pdf", g_propscorebytreat, width = 8, height = 5)
 
 
 df_twostage$method %>% unique()
@@ -113,20 +113,11 @@ df_twostage$method %>% unique()
 df_twostage$method <- dplyr::recode(df_twostage$method,
                                   'PBMI (same weights)' = 'PBMI',
                                   'PBMI (refreshed weights)' = 'PBMI-refresh',
-                                  'cut Bayesian (PG Gibbs + Gibbs, D&W strata)' = 'Cut',
-                                  'Stage2giventheta1hat' = 'Bayes given theta1hat')
-df_twostage <- df_twostage %>% filter(method != 'Bayes given theta1hat')
+                                  'cut Bayesian (PG Gibbs + Gibbs, D&W strata)' = 'Cut')
+# df_twostage <- df_twostage %>% filter(method != 'Bayes given theta1hat')
 #
 my_palette <- c("black", rgb(1,0.7,0.7), rgb(0.8,0.5,0.5), rgb(0.7,0.7, 1), rgb(0.5, 0.5, 0.8), rgb(0, 0.3, 0.6), rgb(0, 0.6, 0.3))
 #
-#
-# load('inst/causal/causal_twostep_laplace_results.RData')
-# laplace_cut_samples <- fast_rmvnorm(1e5, laplace_cut_results$thetahat, laplace_cut_results$asympvar)
-# laplace_cut_samples <- laplace_cut_samples[,11:16]
-# causal_df_laplace <- data.frame(laplace_cut_samples, method = 'Cut-Laplace')
-# colnames(causal_df_laplace)[1:6] <- colnames(causal_df)[1:6]
-# causal_df <- rbind(causal_df, causal_df_laplace)
-
 df_twostage %>% group_by(method) %>% summarise(mean_treat = mean(V1), sd_treat = sd(V1))
 
 df_twostage %>% tail()
@@ -138,7 +129,6 @@ causal_plot <- ggplot(df_twostage, aes(x = V1 * sd_re78, color = method, linetyp
   scale_x_continuous(breaks = c(-2000, 0, 2000, 4000))
 causal_plot
 #
-# ggsave('inst/causal/causal_result.pdf', causal_plot, width = 8, height = 5)
-ggsave('inst/causal/causal_att.pdf', causal_plot, width = 8, height = 5)
+ggsave('inst/causal/causal_lalonde/causal_att.pdf', causal_plot, width = 8, height = 5)
 
 

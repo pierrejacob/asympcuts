@@ -10,3 +10,5 @@ src/*.o
 src/*.so
 src/*.dll
 inst/*.rds
+inst/*.pdf
+inst/causal/causal_lalonde/*.pdf

@@ -17,7 +17,7 @@ set.seed(2026)
 ## - weighted_logistic_log_likC(beta, y, x, weights, ncol, nrow)
 ## - weighted_linear_regressionC(beta, y, x, weights, ncol, nrow)
 library(Rcpp)
-sourceCpp('inst/causal/weighted_loglik.cpp')
+sourceCpp('inst/causal/causal_lalonde/weighted_loglik.cpp')
 
 #### Data preparation ####
 ## load data 'lalonde' from MatchIt
@@ -478,9 +478,9 @@ print(rbind(pg_mean = colMeans(mcmc_samples_stage1), pb_mean = colMeans(pb_res$t
 df_pb <- data.frame(V1 = pb_res$att, method = "PBMI (same weights)")
 df_pb_refresh <- data.frame(V1 = pb_res_refresh$att, method = "PBMI (refreshed weights)")
 
-df_stage2giventheta1hat <- data.frame(V1 = att_theta1hat, method = "Stage2giventheta1hat")
+# df_stage2giventheta1hat <- data.frame(V1 = att_theta1hat, method = "Stage2giventheta1hat")
 
-df_twostage <- rbind(df_mcmc, df_pb, df_pb_refresh, df_stage2giventheta1hat) %>% dplyr::filter(!is.na(V1))
+df_twostage <- rbind(df_mcmc, df_pb, df_pb_refresh) %>% dplyr::filter(!is.na(V1))
 
 ## ATT in dollars, by method
 df_twostage %>% group_by(method) %>%
@@ -498,5 +498,7 @@ g_att <- ggplot(df_twostage, aes(x = V1 * sd_re78, colour = method)) +
   theme_minimal()
 print(g_att)
 
+ggsave('inst/causal/causal_lalonde/causal_att.pdf', g_att, width = 8, height = 5)
+
 save(theta1hat, theta2hat, att_hat, sd_re78, df_twostage, pb_res, pb_res_refresh,
-     file = 'inst/causal/causal_twostage_v3_pbmi_results.RData')
+     file = 'inst/causal/causal_lalonde/causal_twostage_v3_pbmi_results.RData')

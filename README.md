@@ -8,18 +8,29 @@ Posterior Bootstrap* by *(anonymous for now)*.
 The scripts are organized by folders in the inst/ subfolder. Each folder
 corresponds to a subsection of Section 5 (“Illustrations”) of the paper.
 
-- toy_example
+- toy_example/ contains scripts to reproduce the experiments of Section
+  5.1. To reproduce the figures, run:
+  `Rscript inst/toy_example/toy_example_v2_runall.R`
 
-- causal
+- causal:
 
-- epidemio
+– causal_lalonde/ contains scripts to reproduce the experiments of
+Section 5.2.1. The experiment uses the `lalonde` data on the evaluation
+of the National Supported Work program made available in the `MatchIt` R
+package, associated with a publication in the Journal of Statistical
+Software (DOI 10.18637/jss.v042.i08). To reproduce the figures, run:
+`Rscript inst/causal/causal_lalonde/causal_runall.R`
 
-Each folder contains a script with filename ending in “run_all.R”
-Installing the package and running these scripts from the root folder of
-the package will reproduce the results in the paper:
+– causal_synthetic/ contains scripts to reproduce the experiments of
+Section 5.2.2. To reproduce the figures, check the README.md file in
+that folder. The code involves both Python and R scripts. The code
+retrieves replication data from Breunig, Liu and Yu (2025, DOI
+<https://doi.org/10.3982/ECTA21442>) available at
+<https://zenodo.org/records/14015435>.
 
-`Rscript inst/toy_example/toy_example_v2_runall.R`
-
-`Rscript inst/causal/causal_runall.R`
-
-`Rscript inst/epidemio/epidemio_runall.R`
+- epidemio/ contains scripts to reproduce the experiments of Section
+  5.3, which use data from Plummer (2015) in Statistics and Computing
+  (<https://doi.org/10.1007/s11222-014-9503-z>). The data is publically
+  available as part of the supplementary material of that article, and
+  we re-encoded it in the R scripts in `inst/epidemio/`. To reproduce
+  the figures, run: `Rscript inst/epidemio/epidemio_runall.R`
