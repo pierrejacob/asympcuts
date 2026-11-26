@@ -158,6 +158,6 @@ save(theta1star, theta2star, thetastar, SCENARIO, n,
      credible_regions_laplace,
      credible_regions_pbmi,
      pbmi_nsamples,
-     file = paste0("inst/toy_example/toy_example_v2_twostage_coverage_scenario",
+     file = paste0("inst/toy_example/toy_example_twostage_coverage_scenario",
                    SCENARIO, ".RData"))
 

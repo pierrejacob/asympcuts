@@ -5,23 +5,31 @@ output: rmarkdown::github_document
 ## asympcuts
 
 This repository contains code to reproduce the figures in the paper:
-*Asymptotics of cut distributions and robust modular inference using Posterior Bootstrap*
-by *(anonymous for now)*.
+*Asymptotics of cut distributions and robust modular inference using Posterior Bootstrap*.
 
-The scripts are organized by folders in the inst/ subfolder. Each folder corresponds to a subsection of Section 5 ("Illustrations") of the paper. 
+The scripts are organized within the inst/ subfolder. Each folder corresponds to a subsection of Section 5 ("Illustrations") of the paper.
 
-  - toy_example/ contains scripts to reproduce the experiments of Section 5.1. To reproduce the figures, run:
-  `Rscript inst/toy_example/toy_example_v2_runall.R`
-  
-  - causal:
+1. toy_example/ contains scripts to reproduce the experiments of Section 5.1. To reproduce the figures, from a terminal in the root folder, run:
 
-  -- causal_lalonde/ contains scripts to reproduce the experiments of Section 5.2.1. The experiment uses the `lalonde` data on the evaluation of the National Supported Work program made available in the `MatchIt` R package, associated with a publication in the Journal of Statistical Software (DOI 10.18637/jss.v042.i08). To reproduce the figures, run: 
-  `Rscript inst/causal/causal_lalonde/causal_runall.R`
+```
+Rscript inst/toy_example/toy_example_runall.R
+```
   
-  -- causal_synthetic/ contains scripts to reproduce the experiments of Section 5.2.2. To reproduce the figures, check the README.md file in that folder. The code involves both Python and R scripts. The code retrieves replication data from Breunig, Liu and Yu (2025, DOI https://doi.org/10.3982/ECTA21442) available at https://zenodo.org/records/14015435. 
+2. causal/ contains scripts to reproduce the experiments of Section 5.2. It has two subfolders:
+
+  - causal_lalonde/ contains scripts to reproduce the experiments of Section 5.2.1. The experiment uses the `lalonde` data on the evaluation of the National Supported Work program made available in the `MatchIt` R package, associated with a publication in the Journal of Statistical Software (DOI https://doi.org/10.18637/jss.v042.i08). To reproduce the figures, run: 
   
-  - epidemio/ contains scripts to reproduce the experiments of Section 5.3, which use data from Plummer (2015) in Statistics and Computing (https://doi.org/10.1007/s11222-014-9503-z). The data is publically available as part of the supplementary material of that article, and we re-encoded it in the R scripts in `inst/epidemio/`.  To reproduce the figures, run: 
-  `Rscript inst/epidemio/epidemio_runall.R`
+```
+Rscript inst/causal/causal_lalonde/causal_runall.R
+```
+  
+  - causal_synthetic/ contains scripts to reproduce the experiments of Section 5.2.2. **Warning: reproducing this experiment fully takes a long time.** To reproduce the figures, check the `README.md` file in that folder. The code involves both Python and R scripts. The code retrieves replication data from Breunig, Liu and Yu (2025, DOI https://doi.org/10.3982/ECTA21442) available at https://zenodo.org/records/14015435. 
+  
+3. epidemio/ contains scripts to reproduce the experiments of Section 5.3, which use data from Plummer (2015, https://doi.org/10.1007/s11222-014-9503-z). The data is publically available as part of the supplementary material of that article, and we re-encoded it in the provided R scripts.  To reproduce the figures, run: 
+
+```
+Rscript inst/epidemio/epidemio_runall.R
+```
 
 
 

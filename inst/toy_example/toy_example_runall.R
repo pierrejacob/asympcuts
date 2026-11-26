@@ -30,41 +30,41 @@ lp2 <- function(theta2){
 
 ## set seed and generate data under two scenarios
 ## this creates inst/toy_example/toy_example_data.RData
-source("inst/toy_example/toy_example_v2_generate_data.R")
+source("inst/toy_example/toy_example_generate_data.R")
 ## remove objects from environment apart from ll1, ll2, lp1, lp2, and SCENARIO
 rm(list = setdiff(ls(), c("ll1", "ll2", "lp1", "lp2")))
 ##
-SCENARIO <- 1
-## run joint model inference (standard posterior and its Laplace approximation)
-## this creates inst/toy_example/toy_example_v2_jointmodel_scenario1.RData
-source("inst/toy_example/toy_example_v2_jointmodel.R")
-rm(list = setdiff(ls(), c("ll1", "ll2", "lp1", "lp2", "SCENARIO")))
-## run two-stage inference (cut posterior, its Laplace approximation, and PBMI)
-## this creates inst/toy_example/toy_example_v2_twostage_scenario1.RData
-source("inst/toy_example/toy_example_v2_twostage.R")
-rm(list = setdiff(ls(), c("ll1", "ll2", "lp1", "lp2", "SCENARIO")))
-## run coverage experiments
-## this creates inst/toy_example/toy_example_v2_twostage_coverage_scenario1.RData
-source("inst/toy_example/toy_example_v2_twostage_coverage.R")
-rm(list = setdiff(ls(), c("ll1", "ll2", "lp1", "lp2", "SCENARIO")))
-## generate plots and tables
-source("inst/toy_example/toy_example_v2_plot.R")
+# SCENARIO <- 1
+# ## run joint model inference (standard posterior and its Laplace approximation)
+# ## this creates inst/toy_example/toy_example_jointmodel_scenario1.RData
+# source("inst/toy_example/toy_example_jointmodel.R")
+# rm(list = setdiff(ls(), c("ll1", "ll2", "lp1", "lp2", "SCENARIO")))
+# ## run two-stage inference (cut posterior, its Laplace approximation, and PBMI)
+# ## this creates inst/toy_example/toy_example_twostage_scenario1.RData
+# source("inst/toy_example/toy_example_twostage.R")
+# rm(list = setdiff(ls(), c("ll1", "ll2", "lp1", "lp2", "SCENARIO")))
+# ## run coverage experiments
+# ## this creates inst/toy_example/toy_example_twostage_coverage_scenario1.RData
+# source("inst/toy_example/toy_example_twostage_coverage.R")
+# rm(list = setdiff(ls(), c("ll1", "ll2", "lp1", "lp2", "SCENARIO")))
+# ## generate plots and tables
+# source("inst/toy_example/toy_example_plot.R")
 
 SCENARIO <- 2
 ## run joint model inference (standard posterior and its Laplace approximation)
-## this creates inst/toy_example/toy_example_v2_jointmodel_scenario2.RData
-source("inst/toy_example/toy_example_v2_jointmodel.R")
+## this creates inst/toy_example/toy_example_jointmodel_scenario2.RData
+source("inst/toy_example/toy_example_jointmodel.R")
 rm(list = setdiff(ls(), c("ll1", "ll2", "lp1", "lp2", "SCENARIO")))
 ## run two-stage inference (cut posterior, its Laplace approximation, and PBMI)
-## this creates inst/toy_example/toy_example_v2_twostage_scenario2.RData
-source("inst/toy_example/toy_example_v2_twostage.R")
+## this creates inst/toy_example/toy_example_twostage_scenario2.RData
+source("inst/toy_example/toy_example_twostage.R")
 rm(list = setdiff(ls(), c("ll1", "ll2", "lp1", "lp2", "SCENARIO")))
 ## run coverage experiments
-## this creates inst/toy_example/toy_example_v2_twostage_coverage_scenario2.RData
-source("inst/toy_example/toy_example_v2_twostage_coverage.R")
+## this creates inst/toy_example/toy_example_twostage_coverage_scenario2.RData
+source("inst/toy_example/toy_example_twostage_coverage.R")
 rm(list = setdiff(ls(), c("ll1", "ll2", "lp1", "lp2", "SCENARIO")))
 ## generate plots and tables
-source("inst/toy_example/toy_example_v2_plot.R")
+source("inst/toy_example/toy_example_plot.R")
 
 
 

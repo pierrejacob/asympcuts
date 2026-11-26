@@ -101,4 +101,4 @@ samples_laplace <- fast_rmvnorm(1e5, jointmodel_map, cov_laplace)
 #   xlab(expression(theta[1])) + ylab(expression(theta[2])) +
 #   ggtitle('95% credible regions: Standard Posterior (blue) vs Laplace approximation (red)')
 
-save(mcmc_samples, jointmodel_map, cov_laplace, file = paste0('inst/toy_example/toy_example_v2_jointmodel_scenario', SCENARIO, '.RData'))
+save(mcmc_samples, jointmodel_map, cov_laplace, file = paste0('inst/toy_example/toy_example_jointmodel_scenario', SCENARIO, '.RData'))

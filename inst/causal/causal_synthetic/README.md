@@ -1,5 +1,4 @@
-This package reproduces the ATT experiment in Section 5.2.2 and Appendix E of
-*Asymptotics of cut distributions and robust modular inference using Posterior Bootstrap*. 
+This package reproduces the ATT experiment in Section 5.2.2 and Appendix E. 
 
 ## 1. Setup
 

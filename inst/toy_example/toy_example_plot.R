@@ -17,13 +17,13 @@ theme_update(axis.text.x = element_text(size = 20),
 my_palette <- c("black", rgb(1,0.7,0.7), rgb(0.8,0.5,0.5), rgb(0.7,0.7, 1), rgb(0.5, 0.5, 0.8), rgb(0, 0.3, 0.6))
 
 ## Load Joint Model results
-load(paste0("inst/toy_example/toy_example_v2_jointmodel_scenario", SCENARIO, ".RData"))
+load(paste0("inst/toy_example/toy_example_jointmodel_scenario", SCENARIO, ".RData"))
 df_samples <- data.frame(theta1 = mcmc_samples[,1], theta2 = mcmc_samples[,2], dist = "Standard", laplace = FALSE)
 samples_laplace <- mvtnorm::rmvnorm(1e6, jointmodel_map, cov_laplace)
 df_samples <- rbind(df_samples,
                     data.frame(theta1 = samples_laplace[,1], theta2 = samples_laplace[,2], dist = "Standard Laplace", laplace = TRUE))
 ## Load Two Stage results
-load(paste0("inst/toy_example/toy_example_v2_twostage_scenario", SCENARIO, ".RData"))
+load(paste0("inst/toy_example/toy_example_twostage_scenario", SCENARIO, ".RData"))
 df_samples <- rbind(df_samples,
                     data.frame(theta1 = cut_samples[,1], theta2 = cut_samples[,2], dist = "Cut", laplace = FALSE))
 ## Comparison Cut versus Cut-Laplace versus PBMI
@@ -49,7 +49,7 @@ g_std_vs_cut <- ggplot(df_samples, aes(x = theta1, y = theta2, color = factor(di
   xlim(-0.16,0.41) + ylim(1.27, 1.61) +
   xlab(expression(theta[1])) + ylab(expression(theta[2]))   # ggtitle(paste0("Scenario ", SCENARIO), subtitle = 'Standard Posterior (and Laplace approx.) in blue vs Cut (and Laplace approx.) in red')
 g_std_vs_cut
-ggsave(paste0('inst/toy_example/toy_example_v2_std_vs_cut_scenario', SCENARIO, '.pdf'), g_std_vs_cut, width = 8, height = 5)
+ggsave(paste0('inst/toy_example/toy_example_std_vs_cut_scenario', SCENARIO, '.pdf'), g_std_vs_cut, width = 8, height = 5)
 
 ## plot density for theta1
 g_theta1 <- ggplot(df_samples, aes(x = theta1, color = factor(dist), linetype = factor(dist))) +
@@ -89,7 +89,7 @@ g_cut_vs_pbmi <- ggplot(df_samples, aes(x = theta1, y = theta2, color = factor(d
   # ggtitle(paste0("Scenario ", SCENARIO), subtitle = 'Cut (and Laplace approx.) in red, PBMI in dark blue')
 
 g_cut_vs_pbmi
-ggsave(paste0('inst/toy_example/toy_example_v2_cut_vs_pbmi_scenario', SCENARIO, '.pdf'), g_cut_vs_pbmi, width = 8, height = 5)
+# ggsave(paste0('inst/toy_example/toy_example_cut_vs_pbmi_scenario', SCENARIO, '.pdf'), g_cut_vs_pbmi, width = 8, height = 5)
 
 ### all in one plot
 df_samples <- data.frame(theta1 = mcmc_samples[,1], theta2 = mcmc_samples[,2], dist = "Standard", laplace = FALSE)
@@ -114,10 +114,10 @@ g_std_vs_cut <- ggplot(df_samples, aes(x = theta1, y = theta2, color = factor(di
   xlim(-0.16,0.41) + ylim(1.27, 1.61) +
   xlab(expression(theta[1])) + ylab(expression(theta[2]))   # ggtitle(paste0("Scenario ", SCENARIO), subtitle = 'Standard Posterior (and Laplace approx.) in blue vs Cut (and Laplace approx.) in red')
 g_std_vs_cut
-ggsave(paste0('inst/toy_example/toy_example_v2_std_vs_cut_scenario', SCENARIO, '.pdf'), g_std_vs_cut, width = 8, height = 5)
+ggsave(paste0('inst/toy_example/toy_example_std_vs_cut_scenario', SCENARIO, '.pdf'), g_std_vs_cut, width = 8, height = 5)
 
 
-load(file = paste0("inst/toy_example/toy_example_v2_twostage_coverage_scenario", SCENARIO, ".RData"))
+load(file = paste0("inst/toy_example/toy_example_twostage_coverage_scenario", SCENARIO, ".RData"))
 
 ## Compute coverage
 
@@ -158,6 +158,6 @@ df_coverage <- df_coverage %>% setNames(c("Parameter","Cut-Laplace", "PBMI"))
 coverage_table <- knitr::kable(df_coverage, digits = 2, row.names = NA, format = 'latex', escape = FALSE, booktabs = TRUE)
 coverage_table
 
-coverage_table %>%  cat(., file = paste0("inst/toy_example/toy_example_v2_coverage_scenario", SCENARIO, ".tex"))
+coverage_table %>%  cat(., file = paste0("inst/toy_example/toy_example_coverage_scenario", SCENARIO, ".tex"))
 
 
